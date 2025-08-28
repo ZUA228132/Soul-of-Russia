@@ -1,13 +1,14 @@
-# Душа Руси — 3D Interactive (Vercel)
+# Душа Руси — Variant C (Vite + React + Tailwind + Three + GSAP + PWA)
 
-## Развёртывание на Vercel
-1. Создай репозиторий, положи все файлы из этой папки в корень.
-2. Подключи репозиторий к Vercel → Deploy.
-3. URL будет вида `https://your-project.vercel.app`.
-4. Service Worker и манифест лежат в корне, `start_url` и `scope` — `/`, так что PWA будет доступно сразу.
+## Особенности
+- 3D-хиро (Three.js) с GSAP ScrollTrigger + реакция на курсор
+- Градиентный заголовок и новая навигация в стиле референса
+- Бейдж: ✓ Премиум хлопок 190 г/м²
+- Админка (пароль 152212) и каталог/корзина (демо, localStorage)
+- PWA через vite-plugin-pwa — офлайн/установка
 
-## Локально
-- Просто открой `index.html`, но для корректной регистрации SW лучше запустить `npx serve .`
+## Запуск
+npm i
+npm run dev
+npm run build   # для Vercel: Output = dist/
 
-## Пароль админки (демо)
-- `admin`

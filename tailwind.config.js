@@ -7,7 +7,8 @@ export default {
         gold: '#d4af37',
         ink: '#0d0f12',
         panel: '#15181d',
-        fog: '#a0a3ad'
+        fog: '#a0a3ad',
+        twitch: '#9146FF',
       },
       boxShadow: {
         glow: '0 0 40px rgba(212,175,55,0.25)',
@@ -20,9 +21,6 @@ export default {
       },
       backgroundSize: {
         'grid': '16px 16px'
-      },
-      borderRadius: {
-        'xl2': '1.25rem'
       }
     }
   },

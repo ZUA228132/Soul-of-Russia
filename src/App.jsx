@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
+import Navbar from './components/Navbar.jsx'
 import Hero3D from './components/Hero3D.jsx'
+import Collab from './components/Collab.jsx'
 
 const money = (n) => new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(n)
 const LS_PRODUCTS = 'dusha_rusi_products'
@@ -20,7 +22,7 @@ const svgImage = (title = 'Душа Руси', color = '#0b0c10', accent = '#d4a
 }
 
 const seedProducts = () => [
-  { id: crypto.randomUUID(), title: 'Футболка «Золотой Витязь»', price: 2990, color: 'Чёрная', images: [svgImage('Золотой Витязь','#0b0c10')], description: 'Плотный хлопок 240 г/м², золотая тиснёная эмблема. Для тех, кто держит строй.', tags: ['унисекс','лимитированная'], published: true },
+  { id: crypto.randomUUID(), title: 'Футболка «Золотой Витязь»', price: 2990, color: 'Чёрная', images: [svgImage('Золотой Витязь','#0b0c10')], description: 'Плотный хлопок 190 г/м², золотая тиснёная эмблема. Для тех, кто держит строй.', tags: ['унисекс','лимитированная'], published: true },
   { id: crypto.randomUUID(), title: 'Футболка «Северный Ветер»',   price: 2790, color: 'Белая',  images: [svgImage('Северный Ветер','#0f172a')], description: 'Чистые линии, холодный стиль. Дышащая ткань и идеальная посадка.', tags: ['унисекс'], published: true },
   { id: crypto.randomUUID(), title: 'Футболка «Пламя Степей»',     price: 2890, color: 'Бордовая', images: [svgImage('Пламя Степей','#220c10')], description: 'Насыщенный цвет и акцент на деталях. Для ярких характеров.', tags: ['унисекс','новинка'], published: true }
 ]
@@ -43,52 +45,17 @@ const useCart = () => {
   return { cart, add, remove, inc, dec, total, clear }
 }
 
-const Badge = ({children}) => <span className="inline-flex items-center text-xs uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-fog">{children}</span>
-const Button = ({children, onClick, variant='primary', className=''}) => {
-  const base = "relative isolate overflow-hidden group inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition"
-  const variants = { primary: "bg-gold/90 hover:bg-gold text-ink shadow-glow", ghost: "bg-white/5 hover:bg-white/10 border border-white/10 text-white", subtle: "bg-white/3 hover:bg-white/5 text-white" }
+const Badge = ({children}) => <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/5 border border-white/10 text-sm">{children}</span>
+const Button = ({children, onClick, variant='ghost', className=''}) => {
+  const base = "inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition"
+  const variants = { ghost: "bg-white/5 hover:bg-white/10 border border-white/10 text-white", cta: "bg-[#cc3344] hover:bg-[#b12c3a] text-white shadow" }
   return <button onClick={onClick} className={`${base} ${variants[variant]} ${className}`}>{children}</button>
 }
 
-const IconCart = (props) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" className={`${props.className||''} stroke-current`} strokeWidth="1.6">
-    <path d="M3 3h2l1.6 10.6a2 2 0 0 0 2 1.7h7.8a2 2 0 0 0 2-1.5l1.4-6.3H6.1" />
-    <circle cx="9" cy="20" r="1.6" />
-    <circle cx="18" cy="20" r="1.6" />
-  </svg>
-)
-const IconAdmin = (props) => (
-  <svg {...props} viewBox="0 0 24 24" fill="none" className={`${props.className||''} stroke-current`} strokeWidth="1.6">
-    <path d="M12 12a5 5 0 1 0-5-5 5 5 0 0 0 5 5Zm0 2c-5 0-8 2.5-8 5v1h16v-1c0-2.5-3-5-8-5Z"/>
-  </svg>
-)
-
-const Nav = ({ onGoAdmin, onGoHome, cartCount }) => (
-  <nav className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-ink/60 bg-ink/90 border-b border-white/10">
-    <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <img src="/icons/icon-192.png" className="w-8 h-8 rounded-full" alt="logo"/>
-        <a onClick={onGoHome} className="cursor-pointer font-display text-xl font-extrabold tracking-wide">
-          <span className="text-white">Душа </span><span className="text-gold">Руси</span>
-        </a>
-        <Badge>Футболки</Badge>
-      </div>
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" onClick={onGoAdmin} className="gap-2">
-          <IconAdmin className="w-5 h-5"/><span>Админка</span>
-        </Button>
-        <Button variant="primary" onClick={()=>location.hash='#cart'} className="gap-2">
-          <IconCart className="w-5 h-5"/><span>Корзина{cartCount?` • ${cartCount}`:''}</span>
-        </Button>
-      </div>
-    </div>
-  </nav>
-)
-
 const ProductCard = ({p, onAdd}) => (
-  <div className="group rounded-3xl bg-white/3 border border-white/10 overflow-hidden hover:shadow-glow transition">
+  <div className="card overflow-hidden">
     <div className="aspect-[4/3] overflow-hidden">
-      <img src={p.images?.[0]} alt={p.title} className="w-full h-full object-cover group-hover:scale-[1.03] transition"/>
+      <img src={p.images?.[0]} alt={p.title} className="w-full h-full object-cover"/>
     </div>
     <div className="p-4 md:p-5">
       <div className="flex items-center justify-between gap-3">
@@ -100,7 +67,7 @@ const ProductCard = ({p, onAdd}) => (
         <div className="flex gap-2">
           {p.tags?.map(t => <Badge key={t}>{t}</Badge>)}
         </div>
-        <Button onClick={()=>onAdd(p)} className="px-4">В корзину</Button>
+        <Button variant="cta" onClick={()=>onAdd(p)} className="px-4">В корзину</Button>
       </div>
     </div>
   </div>
@@ -128,7 +95,7 @@ const Cart = ({ cart, inc, dec, remove, total, clear }) => (
     ) : (
       <div className="space-y-4">
         {cart.map(i => (
-          <div key={i.id} className="flex items-center gap-4 p-4 rounded-2xl bg-white/3 border border-white/10">
+          <div key={i.id} className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10">
             <img src={i.image} alt={i.title} className="w-20 h-16 object-cover rounded-xl"/>
             <div className="flex-1">
               <div className="font-semibold">{i.title}</div>
@@ -147,8 +114,8 @@ const Cart = ({ cart, inc, dec, remove, total, clear }) => (
           <div className="font-display text-2xl text-gold">{money(total)}</div>
         </div>
         <div className="flex gap-3">
-          <Button variant="ghost" onClick={clear}>Очистить</Button>
-          <Button onClick={()=>{ alert('Заказ создан! (демо)'); clear(); location.hash=''; }}>Оформить</Button>
+          <Button onClick={clear}>Очистить</Button>
+          <Button variant="cta" onClick={()=>{ alert('Заказ создан! (демо)'); clear(); location.hash=''; }}>Оформить</Button>
         </div>
       </div>
     )}
@@ -159,7 +126,7 @@ const Admin = ({ products, setProducts }) => {
   const [logged, setLogged] = useState(false)
   const [pwd, setPwd] = useState('')
   const [draft, setDraft] = useState({ title:'', price:2490, color:'', description:'', images:[], tags:'унисекс', published:true })
-  const onLogin = () => { if (pwd === 'admin') setLogged(true); else alert('Неверный пароль. Подсказка: admin') }
+  const onLogin = () => { if (pwd === '152212') setLogged(true); else alert('Неверный пароль. Подсказка: 152212') }
   const onImg = async (e) => {
     const files = Array.from(e.target.files || [])
     const readers = await Promise.all(files.map(f => new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f) })))
@@ -176,11 +143,11 @@ const Admin = ({ products, setProducts }) => {
   if (!logged) return (
     <div className="max-w-sm mx-auto px-4 py-16">
       <h2 className="font-display text-3xl font-extrabold mb-4">Админка</h2>
-      <div className="p-4 rounded-2xl bg-white/3 border border-white/10">
+      <div className="p-4 rounded-2xl bg-white/5 border border-white/10">
         <label className="text-sm text-fog">Пароль</label>
-        <input type="password" value={pwd} onChange={e=>setPwd(e.target.value)} className="mt-2 w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 outline-none"/>
+        <input type="password" value={pwd} onChange={e=>setPwd(e.target.value)} className="mt-2 w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none"/>
         <Button className="mt-4 w-full" onClick={onLogin}>Войти</Button>
-        <p className="mt-3 text-xs text-fog">Демо: пароль <b>admin</b></p>
+        <p className="mt-3 text-xs text-fog">Демо: пароль <b>152212</b></p>
       </div>
     </div>
   )
@@ -189,27 +156,27 @@ const Admin = ({ products, setProducts }) => {
     <div className="max-w-6xl mx-auto px-4 py-10">
       <h2 className="font-display text-3xl font-extrabold mb-6">Новый товар</h2>
       <div className="grid lg:grid-cols-3 gap-5">
-        <div className="lg:col-span-1 p-4 rounded-2xl bg-white/3 border border-white/10">
+        <div className="lg:col-span-1 p-4 rounded-2xl bg-white/5 border border-white/10">
           <div className="space-y-3">
-            <div><label className="text-sm text-fog">Название</label><input value={draft.title} onChange={e=>setDraft(d=>({...d, title:e.target.value}))} className="mt-1 w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 outline-none"/></div>
+            <div><label className="text-sm text-fog">Название</label><input value={draft.title} onChange={e=>setDraft(d=>({...d, title:e.target.value}))} className="mt-1 w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none"/></div>
             <div className="grid grid-cols-2 gap-3">
-              <div><label className="text-sm text-fog">Цена</label><input type="number" value={draft.price} onChange={e=>setDraft(d=>({...d, price:e.target.value}))} className="mt-1 w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 outline-none"/></div>
-              <div><label className="text-sm text-fog">Цвет</label><input value={draft.color} onChange={e=>setDraft(d=>({...d, color:e.target.value}))} className="mt-1 w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 outline-none"/></div>
+              <div><label className="text-sm text-fog">Цена</label><input type="number" value={draft.price} onChange={e=>setDraft(d=>({...d, price:e.target.value}))} className="mt-1 w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none"/></div>
+              <div><label className="text-sm text-fog">Цвет</label><input value={draft.color} onChange={e=>setDraft(d=>({...d, color:e.target.value}))} className="mt-1 w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none"/></div>
             </div>
-            <div><label className="text-sm text-fog">Теги (через запятую)</label><input value={draft.tags} onChange={e=>setDraft(d=>({...d, tags:e.target.value}))} className="mt-1 w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 outline-none"/></div>
-            <div><label className="text-sm text-fog">Описание</label><textarea rows="4" value={draft.description} onChange={e=>setDraft(d=>({...d, description:e.target.value}))} className="mt-1 w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 outline-none"></textarea></div>
-            <div><label className="text-sm text-fog">Изображения</label><input type="file" accept="image/*" multiple onChange={onImg} className="mt-1 w-full rounded-xl bg-white/5 border border-white/10 px-3 py-2 outline-none"/>
+            <div><label className="text-sm text-fog">Теги (через запятую)</label><input value={draft.tags} onChange={e=>setDraft(d=>({...d, tags:e.target.value}))} className="mt-1 w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none"/></div>
+            <div><label className="text-sm text-fog">Описание</label><textarea rows="4" value={draft.description} onChange={e=>setDraft(d=>({...d, description:e.target.value}))} className="mt-1 w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none"></textarea></div>
+            <div><label className="text-sm text-fog">Изображения</label><input type="file" accept="image/*" multiple onChange={onImg} className="mt-1 w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none"/>
               <div className="mt-2 grid grid-cols-3 gap-2">{draft.images.map((src, idx)=>(<img key={idx} src={src} className="w-full h-20 object-cover rounded-lg"/>))}</div>
             </div>
             <div className="flex items-center gap-2"><input id="pub" type="checkbox" checked={draft.published} onChange={e=>setDraft(d=>({...d, published:e.target.checked}))}/><label htmlFor="pub" className="text-sm">Опубликовано</label></div>
-            <Button onClick={add} className="w-full">Добавить</Button>
+            <Button className="w-full" onClick={add}>Добавить</Button>
           </div>
         </div>
         <div className="lg:col-span-2">
           <h3 className="font-display text-xl font-extrabold mb-3">Товары</h3>
           <div className="grid sm:grid-cols-2 gap-4">
             {products.map(p => (
-              <div key={p.id} className="p-4 rounded-2xl bg-white/3 border border-white/10">
+              <div key={p.id} className="p-4 rounded-2xl bg-white/5 border border-white/10">
                 <div className="flex gap-3">
                   <img src={p.images?.[0]} className="w-28 h-24 object-cover rounded-xl"/>
                   <div className="flex-1">
@@ -218,7 +185,10 @@ const Admin = ({ products, setProducts }) => {
                     <div className="mt-2 flex gap-2"><Badge>{p.published? 'опубликовано':'скрыто'}</Badge>{p.tags?.map(t=> <Badge key={t}>{t}</Badge>)}</div>
                   </div>
                 </div>
-                <div className="mt-3 flex gap-2"><Button variant="ghost" onClick={()=>setProducts(ps=>ps.map(x=>x.id===p.id? {...x, published:!x.published} : x))}>Скрыть/Показать</Button><Button variant="ghost" onClick={()=>setProducts(ps=>ps.filter(x=>x.id!==p.id))}>Удалить</Button></div>
+                <div className="mt-3 flex gap-2">
+                  <Button onClick={()=>toggle(p.id)}>Скрыть/Показать</Button>
+                  <Button onClick={()=>del(p.id)}>Удалить</Button>
+                </div>
               </div>
             ))}
           </div>
@@ -228,19 +198,6 @@ const Admin = ({ products, setProducts }) => {
   )
 }
 
-const Footer = () => (
-  <footer className="border-t border-white/10">
-    <div className="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
-      <div className="text-fog">© 2025 «Душа Руси». Интерактив и стиль.</div>
-      <div className="flex gap-3">
-        <a className="text-fog hover:text-white" href="#" onClick={(e)=>{e.preventDefault(); alert('Пользовательское соглашение — демо.')}}>Условия</a>
-        <span className="opacity-20">•</span>
-        <a className="text-fog hover:text-white" href="#" onClick={(e)=>{e.preventDefault(); alert('Политика конфиденциальности — демо.')}}>Конфиденциальность</a>
-      </div>
-    </div>
-  </footer>
-)
-
 export default function App() {
   const [products, setProducts] = useProducts()
   const cart = useCart()
@@ -248,86 +205,50 @@ export default function App() {
   useEffect(() => { const onHash = () => setRoute(location.hash.replace('#','')); window.addEventListener('hashchange', onHash); return () => window.removeEventListener('hashchange', onHash) }, [])
 
   return (
-    <div className="pb-10">
-      <nav className="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-ink/60 bg-ink/90 border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <img src="/icons/icon-192.png" className="w-8 h-8 rounded-full" alt="logo"/>
-            <a onClick={()=>{location.hash='';}} className="cursor-pointer font-display text-xl font-extrabold tracking-wide">
-              <span className="text-white">Душа </span><span className="text-gold">Руси</span>
-            </a>
-            <span className="inline-flex items-center text-xs uppercase tracking-wider px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-fog">Футболки</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button className="relative isolate overflow-hidden group inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition bg-white/5 hover:bg-white/10 border border-white/10 text-white" onClick={()=>location.hash='admin'}>Админка</button>
-            <button className="relative isolate overflow-hidden group inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition bg-gold/90 hover:bg-gold text-ink shadow-glow" onClick={()=>location.hash='#cart'}>Корзина{cart.cart.length?` • ${cart.cart.length}`:''}</button>
-          </div>
-        </div>
-      </nav>
+    <div className="min-h-screen">
+      <Navbar cartCount={cart.cart.length}/>
 
       {route === 'admin' ? <Admin products={products} setProducts={setProducts}/> :
-       route === 'cart' ? (
-        <div className="max-w-4xl mx-auto px-4 py-10">
-          <h2 className="font-display text-2xl md:text-3xl font-extrabold mb-6">Корзина</h2>
-          {cart.cart.length === 0 ? (
-            <div className="text-fog">Пусто. Но это легко исправить 😉</div>
-          ) : (
-            <div className="space-y-4">
-              {cart.cart.map(i => (
-                <div key={i.id} className="flex items-center gap-4 p-4 rounded-2xl bg-white/3 border border-white/10">
-                  <img src={i.image} alt={i.title} className="w-20 h-16 object-cover rounded-xl"/>
-                  <div className="flex-1">
-                    <div className="font-semibold">{i.title}</div>
-                    <div className="text-fog">{money(i.price)}</div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <button onClick={()=>cart.dec(i.id)} className="w-8 h-8 rounded-lg bg-white/10">-</button>
-                    <div className="w-8 text-center">{i.qty}</div>
-                    <button onClick={()=>cart.inc(i.id)} className="w-8 h-8 rounded-lg bg-white/10">+</button>
-                  </div>
-                  <button onClick={()=>cart.remove(i.id)} className="ml-2 text-fog hover:text-white">Удалить</button>
-                </div>
-              ))}
-              <div className="flex items-center justify-between pt-4 border-t border-white/10">
-                <div className="text-fog">Итого</div>
-                <div className="font-display text-2xl text-gold">{money(cart.total)}</div>
-              </div>
-              <div className="flex gap-3">
-                <button className="relative isolate overflow-hidden group inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition bg-white/5 hover:bg-white/10 border border-white/10 text-white" onClick={cart.clear}>Очистить</button>
-                <button className="relative isolate overflow-hidden group inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition bg-gold/90 hover:bg-gold text-ink shadow-glow" onClick={()=>{ alert('Заказ создан! (демо)'); cart.clear(); location.hash=''; }}>Оформить</button>
-              </div>
-            </div>
-          )}
+       route === 'cart' ? <Cart {...cart}/> :
+       <>
+         <section className="max-w-7xl mx-auto px-4 pt-10 pb-12 md:pt-14 md:pb-16">
+           <div className="grid md:grid-cols-2 gap-10 items-center">
+             <div>
+               <h1 className="font-display text-4xl md:text-6xl font-extrabold leading-[1.05]">
+                 <span className="bg-gradient-title bg-clip-text text-transparent">
+                   Футболки, в которых слышно сердце
+                 </span>
+               </h1>
+               <p className="mt-5 text-fog text-lg max-w-prose">
+                 Минимализм, глубина и принты с характером. Сделаны для города и для легенд.
+               </p>
+               <div className="mt-7 flex items-center gap-3">
+                 <Button variant="cta" onClick={()=>document.getElementById('catalog')?.scrollIntoView({behavior:'smooth'})}>К коллекции</Button>
+                 <div className="badge">✓ Премиум хлопок 190 г/м²</div>
+               </div>
+               <div className="mt-6 flex flex-wrap gap-3 text-sm">
+                 {['XS','S','M','L','XL','XXL'].map(s => <span key={s} className="px-3 py-1.5 rounded-xl bg-white/5 border border-white/10">{s}</span>)}
+               </div>
+             </div>
+             <Hero3D/>
+           </div>
+         </section>
+
+         <Catalog products={products} onAdd={cart.add}/>
+         <Collab/>
+       </>
+      }
+
+      <footer className="border-t border-white/10 mt-10">
+        <div className="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="text-fog">© 2025 «Душа Руси». Характер и стиль.</div>
+          <div className="flex gap-3">
+            <a className="text-fog hover:text-white" href="#" onClick={(e)=>{e.preventDefault(); alert('Пользовательское соглашение — демо.')}}>Условия</a>
+            <span className="opacity-20">•</span>
+            <a className="text-fog hover:text-white" href="#" onClick={(e)=>{e.preventDefault(); alert('Политика конфиденциальности — демо.')}}>Конфиденциальность</a>
+          </div>
         </div>
-       ) : (
-        <>
-          <section className="relative overflow-hidden">
-            <div className="max-w-7xl mx-auto px-4 pt-14 pb-16 md:pt-18 md:pb-20">
-              <div className="grid md:grid-cols-2 gap-10 items-center">
-                <div>
-                  <div className="inline-flex items-center gap-2 mb-4">
-                    <span className="w-2 h-2 rounded-full bg-gold animate-pulse"></span>
-                    <span className="text-fog">Новая коллекция уже здесь</span>
-                  </div>
-                  <h1 className="font-display text-4xl md:text-6xl font-extrabold leading-tight">
-                    Красота. Характер. <span className="text-gold">Интерактив</span> в каждом кадре.
-                  </h1>
-                  <p className="mt-4 text-lg text-fog max-w-prose">
-                    WebGL + GSAP: реакция на курсор, скролл-анимации и плавный контроль камеры.
-                  </p>
-                  <div className="mt-6 flex gap-3">
-                    <button onClick={()=>document.getElementById('catalog')?.scrollIntoView({behavior:'smooth'})} className="relative isolate overflow-hidden group inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition bg-gold/90 hover:bg-gold text-ink shadow-glow">Смотреть каталог</button>
-                    <button onClick={()=>alert('О бренде: классика и современность в золотом сплаве.')} className="relative isolate overflow-hidden group inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition bg-white/5 hover:bg-white/10 border border-white/10 text-white">О бренде</button>
-                  </div>
-                </div>
-                <Hero3D/>
-              </div>
-            </div>
-          </section>
-          <Catalog products={products} onAdd={cart.add}/>
-        </>
-       )}
-      <Footer/>
+      </footer>
     </div>
   )
 }

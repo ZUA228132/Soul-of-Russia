@@ -8,11 +8,10 @@ export default function Hero3D() {
   const wrapRef = useRef(null)
   const overlayRef = useRef(null)
   const [enabled, setEnabled] = useState(true)
-  const [ok, setOk] = useState(true)
 
   useEffect(() => {
     if (!enabled) return
-    if (!window.WebGLRenderingContext) { setOk(false); return }
+    if (!window.WebGLRenderingContext) return
     const mount = wrapRef.current
     if (!mount) return
     const rect = () => ({ w: mount.clientWidth, h: mount.clientHeight })
@@ -87,10 +86,9 @@ export default function Hero3D() {
       })
     }
 
-    let raf, t = 0
+    let raf
     const animate = () => {
       raf = requestAnimationFrame(animate)
-      t += 0.01
       knot.rotation.x += (targetRotX - knot.rotation.x) * 0.08
       knot.rotation.y += (targetRotY - knot.rotation.y) * 0.08
       knot.rotation.z += 0.0025
@@ -119,7 +117,7 @@ export default function Hero3D() {
 
   return (
     <div className="relative">
-      <div className="aspect-[4/3] rounded-3xl gradient-border overflow-hidden shadow-glow">
+      <div className="aspect-[4/3] rounded-2xl border border-white/10 overflow-hidden">
         <div ref={wrapRef} className="w-full h-full"></div>
         <div ref={overlayRef} className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-gold/10"></div>
         <div className="absolute top-3 right-3 z-10">
