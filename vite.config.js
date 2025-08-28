@@ -21,7 +21,10 @@ export default defineConfig({
           { src: 'icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any maskable' }
         ]
       },
-      workbox: { navigateFallback: '/index.html' }
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        navigateFallback: '/index.html'
+      }
     })
   ],
   server: { port: 5173, host: true },
