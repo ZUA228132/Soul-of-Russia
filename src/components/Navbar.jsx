@@ -39,8 +39,7 @@ export default function Navbar({ cartCount=0 }) {
         </div>
         <div className="flex-1"></div>
         <IconBtn title="Тема" onClick={toggleTheme}>{theme==='light'?'🌞':'🌙'}</IconBtn>
-        <IconBtn title="Меню" onClick={()=>setOpen(true)}>☰</IconBtn>
-        <motion.button whileHover={{ scale: 1.04 }} onClick={()=>location.hash='#cart'} className="relative w-10 h-10 rounded-xl btn-ghost">
+                <motion.button whileHover={{ scale: 1.04 }} onClick={()=>location.hash='#cart'} className="relative w-10 h-10 rounded-xl btn-ghost">
           <span className="absolute -top-1 -right-1 text-[10px] bg-gold text-black rounded-full px-1.5 py-0.5">{cartCount}</span>🧺
         </motion.button>
       </div>

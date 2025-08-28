@@ -4,23 +4,18 @@ export default function CollabHero() {
     <section className="section">
       <div className="card p-5 overflow-hidden">
         <div className="flex items-center gap-3">
-          <svg width="36" height="36" viewBox="0 0 240 240" aria-hidden>
-            <rect width="200" height="160" x="20" y="40" rx="20" fill="#9146FF"/>
-            <rect width="40" height="40" x="60" y="90" fill="black"/>
-            <rect width="40" height="40" x="126" y="90" fill="black"/>
-            <polygon points="160,200 120,200 90,228 90,200 20,200 20,40 220,40 220,180" fill="#9146FF"/>
-          </svg>
+          <img src="https://spng.pngfind.com/pngs/s/180-1800308_twitch-logo-png-transparent-background-twitch-logo-no.png" alt="Twitch" className="w-7 h-7 object-contain"/>
           <div>
             <div className="font-semibold text-lg">Душа Руси × SNAISIX</div>
             <div className="text-muted text-sm">@SNAISIX</div>
           </div>
         </div>
         <p className="mt-3 text-sm text-muted">
-          Лимитированные принты, дропы в эфире и бонусы подписчикам.
+          Лимитированные принты и дропы в эфире. Бонусы подписчикам.
         </p>
         <div className="mt-4 flex gap-3">
-          <a href="https://twitch.tv/SNAISIX" target="_blank" rel="noreferrer" className="btn btn-cta">Смотреть на Twitch</a>
-          <a href="#constructor" className="btn btn-ghost">Собрать коллаб</a>
+          <a href="https://twitch.tv/SNAISIX" target="_blank" rel="noreferrer" className="btn btn-cta whitespace-nowrap">Смотреть на Twitch</a>
+          <a href="#constructor" className="btn btn-ghost whitespace-nowrap">Собрать коллаб</a>
         </div>
       </div>
     </section>

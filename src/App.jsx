@@ -6,6 +6,7 @@ import Filters from './components/Filters.jsx'
 import Constructor2D from './components/Constructor2D.jsx'
 import PWAInstallHint from './components/PWAInstallHint.jsx'
 import Divider from './components/Divider.jsx'
+import { ensureAnonAuth, fetchProducts, upsertProduct, saveCart as fbSaveCart, loadCart as fbLoadCart, createOrder } from './firebase.js'
 
 const money = (n) => new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(n)
 const LS_PRODUCTS = 'dusha_rusi_products'
@@ -74,7 +75,7 @@ const Catalog = ({ products, onAdd, filters }) => {
     </section>
   )
 }
-const Cart = ({ cart, inc, dec, remove, total, clear }) => (
+const Cart = ({ cart, inc, dec, remove, total, clear, uid }) => (
   <div className="section">
     <h2 className="font-display text-3xl font-extrabold mb-4">Корзина</h2>
     {cart.length === 0 ? (<div className="text-muted">Пусто. Но это легко исправить 😉</div>) : (
@@ -127,9 +128,18 @@ export default function App() {
         </>
       )}
 
-      <footer className="section text-center text-muted">
-        © 2025 «Душа Руси»
-      </footer>
+      
+          <footer className="section text-center text-muted">
+            <button
+              className="text-muted"
+              onPointerDown={(e)=>{ e.target.__t=Date.now() }}
+              onPointerUp={(e)=>{ if(Date.now()-(e.target.__t||0)>800){ location.hash='admin' } }}
+              title="©"
+            >
+              © 2025 «Душа Руси»
+            </button>
+          </footer>
+
     </div>
   )
 }
