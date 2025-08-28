@@ -1,5 +1,5 @@
 {
-  "name": "dusha-rusi-variant-d",
+  "name": "dusha-rusi-variant-e",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -9,11 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "gsap": "^3.12.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "three": "^0.160.0",
-    "framer-motion": "^10.18.0"
+    "framer-motion": "^10.18.0",
+    "react-konva": "^18.2.11",
+    "konva": "^9.3.12"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",

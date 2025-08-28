@@ -1,9 +1,8 @@
-import React, { useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Navbar from './components/Navbar.jsx'
-import PinnedHero from './components/PinnedHero.jsx'
+import CollabHero from './components/CollabHero.jsx'
 import Filters from './components/Filters.jsx'
-import TeeConfiguratorGLTF from './components/TeeConfiguratorGLTF.jsx'
-import { motion } from 'framer-motion'
+import Constructor2D from './components/Constructor2D.jsx'
 
 const money = (n) => new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(n)
 const LS_PRODUCTS = 'dusha_rusi_products'
@@ -21,27 +20,34 @@ const svgImage = (title = 'Душа Руси', color = '#0b0c10', accent = '#d4a
   </svg>`
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)
 }
+
 const seedProducts = () => [
   { id: crypto.randomUUID(), title: 'Футболка «Золотой Витязь»', price: 2990, color: 'Чёрная', images: [svgImage('Золотой Витязь','#0b0c10')], description: 'Плотный хлопок 190 г/м², золотая тиснёная эмблема.', tags: ['унисекс','лимит'], badges: ['star'] , published: true },
   { id: crypto.randomUUID(), title: 'Футболка «Северный Ветер»',   price: 2790, color: 'Белая',  images: [svgImage('Северный Ветер','#0f172a')], description: 'Чистые линии, холодный стиль.', tags: ['унисекс','новинка'], badges: ['hit'], published: true },
   { id: crypto.randomUUID(), title: 'Футболка «SNAISIX drop»',     price: 3190, color: 'Фиолетовая', images: [svgImage('SNAISIX drop','#1b1029')], description: 'Коллаборация со SNAISIX.', tags: ['лимит'], badges: ['bolt','gift'], published: true }
 ]
-const useProducts = () => { const [products, setProducts] = useState(() => load(LS_PRODUCTS, null) ?? (() => { const seeded = seedProducts(); save(LS_PRODUCTS, seeded); return seeded })()); useEffect(() => save(LS_PRODUCTS, products), [products]); return [products, setProducts] }
+
+const useProducts = () => {
+  const [products, setProducts] = useState(() => load(LS_PRODUCTS, null) ?? (() => { const seeded = seedProducts(); save(LS_PRODUCTS, seeded); return seeded })())
+  useEffect(() => save(LS_PRODUCTS, products), [products])
+  return [products, setProducts]
+}
 const useCart = () => {
   const [cart, setCart] = useState(() => load(LS_CART, []))
   useEffect(() => save(LS_CART, cart), [cart])
   const add = (p) => setCart(c => { const i = c.findIndex(x=>x.id===p.id); if (i>=0){ const copy=[...c]; copy[i].qty++; return copy } return [...c,{ id:p.id, title:p.title, price:p.price, image:p.images?.[0], qty:1 }] })
+  const addCustomPng = (dataUrl) => setCart(c => [...c, { id: crypto.randomUUID(), title: 'Кастомная футболка', price: 3490, image: dataUrl, qty:1 }])
   const remove = (id) => setCart(c => c.filter(i => i.id !== id))
   const inc = (id) => setCart(c => c.map(i => i.id===id? {...i, qty:i.qty+1}: i))
   const dec = (id) => setCart(c => c.map(i => i.id===id? {...i, qty:Math.max(1,i.qty-1)}: i))
   const total = cart.reduce((s,i)=>s+i.price*i.qty,0)
   const clear = () => setCart([])
-  return { cart, add, remove, inc, dec, total, clear }
+  return { cart, add, addCustomPng, remove, inc, dec, total, clear }
 }
 
 const BadgeIco = ({b}) => { const map = { hit:'🔥', star:'⭐️', gift:'🎁', bolt:'⚡️' }; return <span title={b} className="badge">{map[b] || '•'}</span> }
 const ProductCard = ({p, onAdd}) => (
-  <motion.div whileHover={{ y: -2, scale: 1.01 }} className="card overflow-hidden">
+  <div className="card overflow-hidden">
     <div className="aspect-[4/3] overflow-hidden"><img src={p.images?.[0]} alt={p.title} className="w-full h-full object-cover"/></div>
     <div className="p-4 md:p-5">
       <div className="flex items-center justify-between gap-3"><h3 className="font-semibold text-lg md:text-xl">{p.title}</h3><span className="text-gold font-semibold">{money(p.price)}</span></div>
@@ -52,8 +58,9 @@ const ProductCard = ({p, onAdd}) => (
         <button onClick={()=>onAdd(p)} className="btn btn-cta px-4">В корзину</button>
       </div>
     </div>
-  </motion.div>
+  </div>
 )
+
 const Catalog = ({ products, onAdd, filters }) => {
   const filtered = useMemo(() => products.filter(p => {
     if (filters.query && !p.title.toLowerCase().includes(filters.query.toLowerCase())) return false
@@ -66,10 +73,11 @@ const Catalog = ({ products, onAdd, filters }) => {
     <section id="catalog" className="max-w-7xl mx-auto px-4 pb-16">
       <div className="flex items-end justify-between mb-4"><h2 className="font-display text-2xl md:text-3xl font-extrabold">Каталог</h2><span className="text-fog">{filtered.length} из {products.length}</span></div>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">{filtered.map(p => <ProductCard key={p.id} p={p} onAdd={onAdd}/>)}</div>
-      <div className="mt-8"><button onClick={()=>location.hash='#builder'} className="btn btn-ghost">Собрать свою футболку (3D)</button></div>
+      <div className="mt-8"><button onClick={()=>location.hash='#constructor'} className="btn btn-ghost">Собрать свою футболку</button></div>
     </section>
   )
 }
+
 const Cart = ({ cart, inc, dec, remove, total, clear }) => (
   <div className="max-w-4xl mx-auto px-4 py-10">
     <h2 className="font-display text-2xl md:text-3xl font-extrabold mb-6">Корзина</h2>
@@ -89,6 +97,7 @@ const Cart = ({ cart, inc, dec, remove, total, clear }) => (
     )}
   </div>
 )
+
 const Admin = ({ products, setProducts }) => {
   const [logged, setLogged] = useState(false)
   const [pwd, setPwd] = useState('')
@@ -113,7 +122,7 @@ const Admin = ({ products, setProducts }) => {
   const badgeDefs = [ { id:'hit', label:'Хит', ico:'🔥' }, { id:'star', label:'Новинка', ico:'⭐️' }, { id:'gift', label:'Подарок', ico:'🎁' }, { id:'bolt', label:'Эксклюзив', ico:'⚡️' } ]
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
-      <h2 className="font-display text-3xl font-extrabold mb-6">Новый товар</h2>
+      <h2 className="font-display text-3xl font-extrabолд mb-6">Новый товар</h2>
       <div className="grid lg:grid-cols-3 gap-5">
         <div className="lg:col-span-1 p-4 rounded-2xl bg-white/5 border border-white/10">
           <div className="space-y-3">
@@ -124,7 +133,7 @@ const Admin = ({ products, setProducts }) => {
             </div>
             <div><label className="text-sm text-fog">Теги (через запятую)</label><input value={draft.tags} onChange={e=>setDraft(d=>({...d, tags:e.target.value}))} className="mt-1 w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none"/></div>
             <div><label className="text-sm text-fog">Описание</label><textarea rows="4" value={draft.description} onChange={e=>setDraft(d=>({...d, description:e.target.value}))} className="mt-1 w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none"></textarea></div>
-            <div><label className="text-sm text-fog">Изображения</label><input type="file" accept="image/*" multiple onChange={onImg} className="mt-1 w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none"/>
+            <div><label className="text-sm text-fog">Изображения</label><input type="file" accept="image/*" multiple onChange={e=>{ const files=Array.from(e.target.files||[]); Promise.all(files.map(f => new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f) }))).then(list=>setDraft(d=>({...d, images:[...(d.images||[]), ...list]}))) }} className="mt-1 w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none"/>
               <div className="mt-2 grid grid-cols-3 gap-2">{draft.images?.map((src, idx)=>(<img key={idx} src={src} className="w-full h-20 object-cover rounded-lg"/>))}</div>
             </div>
             <div>
@@ -150,8 +159,8 @@ const Admin = ({ products, setProducts }) => {
                   </div>
                 </div>
                 <div className="mt-3 flex gap-2">
-                  <button className="btn btn-ghost" onClick={()=>toggle(p.id)}>Скрыть/Показать</button>
-                  <button className="btn btn-ghost" onClick={()=>del(p.id)}>Удалить</button>
+                  <button className="btn btn-ghost" onClick={()=>setProducts(ps => ps.map(x => x.id===p.id? {...x, published:!x.published} : x))}>Скрыть/Показать</button>
+                  <button className="btn btn-ghost" onClick={()=>setProducts(ps => ps.filter(x => x.id !== p.id))}>Удалить</button>
                 </div>
               </div>
             ))}
@@ -168,23 +177,26 @@ export default function App() {
   const [route, setRoute] = useState(() => location.hash.replace('#',''))
   const [filters, setFilters] = useState({ query:'', tags:[], badges:[], price:6000 })
   useEffect(() => { const onHash = () => setRoute(location.hash.replace('#','')); window.addEventListener('hashchange', onHash); return () => window.removeEventListener('hashchange', onHash) }, [])
+
   return (
     <div className="min-h-screen">
       <Navbar cartCount={cart.cart.length}/>
+
       {route === 'admin' ? <Admin products={products} setProducts={setProducts}/> :
        route === 'cart' ? <Cart {...cart}/> :
-       route === 'builder' ? (
+       route === 'constructor' ? (
         <div className="max-w-7xl mx-auto px-4 py-10">
-          <h2 className="font-display text-3xl font-extrabold mb-4">Конструктор футболок (3D)</h2>
-          <TeeConfiguratorGLTF onDone={(item)=>{ cart.add(item); location.hash='#cart' }}/>
+          <h2 className="font-display text-3xl font-extrabold mb-4">Конструктор футболок (как vsemayki)</h2>
+          <Constructor2D onAddToCart={(png)=>{ cart.addCustomPng(png); location.hash='#cart' }}/>
         </div>
        ) : (
         <>
-          <PinnedHero/>
+          <CollabHero/>
           <Filters onChange={setFilters}/>
           <Catalog products={products} onAdd={cart.add} filters={filters}/>
         </>
        )}
+
       <footer className="border-t border-white/10 mt-10">
         <div className="max-w-7xl mx-auto px-4 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-fog">© 2025 «Душа Руси». Характер и стиль.</div>
