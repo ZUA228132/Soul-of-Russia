@@ -32,7 +32,7 @@ export default function Navbar({ cartCount=0 }) {
   return (
     <header className="sticky top-0 z-40 safe-header" style={{backdropFilter:'blur(10px)'}}>
       <div className="section py-3 flex items-center gap-3 border-b" style={{borderColor:'var(--border)'}}>
-        <div className="w-9 h-9 rounded-xl btn-ghost flex items-center justify-center font-bold">ДР</div>
+        <div className="w-9 h-9 rounded-xl btn-ghost flex items-center justify-center font-bold"><button onClick={()=>{ if (history.length>1) history.back(); else location.hash="" }} className="w-full h-full">ДР</button></div>
         <div className="leading-tight select-none">
           <div className="font-semibold">Душа Руси</div>
           <div className="text-xs text-muted tracking-wide">ФУТБОЛКИ</div>

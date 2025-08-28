@@ -12,8 +12,13 @@ const svgImage = (title = 'Душа Руси', color = '#0b0c10', accent = '#d4a
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)
 }
 
+import { upsertProduct, fetchOrders } from '../firebase.js'
+
 export default function Admin({ products, setProducts }) {
   const [logged, setLogged] = useState(false)
+const [orders, setOrders] = useState([])
+React.useEffect(()=>{ (async()=>{ try{ const o = await fetchOrders(); setOrders(o) } catch{} })() }, [])
+
   const [pwd, setPwd] = useState('')
   const [draft, setDraft] = useState({ title:'', price:2490, color:'', description:'', images:[], tags:'унисекс', badges:[], published:true })
 
@@ -23,7 +28,7 @@ export default function Admin({ products, setProducts }) {
     const readers = await Promise.all(files.map(f => new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f) })))
     setDraft(d => ({...d, images:[...d.images, ...readers]}))
   }
-  const add = () => {
+  const add = async () => {
     if (!draft.title) return alert('Название?')
     const p = {
       id: crypto.randomUUID(),
@@ -36,7 +41,7 @@ export default function Admin({ products, setProducts }) {
       badges: draft.badges ?? [],
       published: !!draft.published
     }
-    setProducts(ps => [p, ...ps])
+    await upsertProduct(p); setProducts(ps => [p, ...ps])
     setDraft({ title:'', price:2490, color:'', description:'', images:[], tags:'унисекс', badges:[], published:true })
     alert('Добавлено!')
   }
@@ -61,7 +66,7 @@ export default function Admin({ products, setProducts }) {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
-      <h2 className="font-display text-3xl font-extrabold mb-6">Новый товар</h2>
+      <h2 className="font-display text-3xl font-extrabold mb-6">Заказы</h2><div className="grid gap-3 mb-10">{orders.map(o => (<div key={o.id} className="p-4 rounded-2xl btn-ghost"><div className="text-sm text-muted">#{o.id.slice(0,8)} • + new Date(o.createdAt).toLocaleString("ru-RU")</div><div className="mt-1 font-semibold">{o.phone || "—"} • {o.delivery}</div><div className="text-sm">{o.address || "—"}</div><div className="mt-2 text-sm">Товаров: {o.items?.length||0} • Сумма: {new Intl.NumberFormat("ru-RU",{style:"currency",currency:"RUB",maximumFractionDigits:0}).format(o.total||0)}</div></div>))}</div><h2 className="font-display text-3xl font-extrabold mb-6">Новый товар</h2>
       <div className="grid lg:grid-cols-3 gap-5">
         <div className="lg:col-span-1 p-4 rounded-2xl btn-ghost">
           <div className="space-y-3">
