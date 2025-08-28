@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['icons/icon-192.png', 'icons/icon-512.png'],
+      includeAssets: ['icons/icon-192.png','icons/icon-512.png'],
       manifest: {
         name: 'Душа Руси — Магазин футболок',
         short_name: 'Душа Руси',

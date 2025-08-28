@@ -5,10 +5,9 @@
 :root { color-scheme: dark; }
 html, body { font-family: Inter, system-ui, sans-serif; }
 .font-display { font-family: Unbounded, Inter, system-ui, sans-serif; }
-.badge { @apply inline-flex items-center px-3 py-1 rounded-full bg-white/5 border border-white/10 text-sm; }
-.btn { @apply inline-flex items-center justify-center rounded-xl px-4 py-2 text-sm font-semibold transition; }
+.badge { @apply inline-flex items-center px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-xs; }
+.btn { @apply inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition; }
 .btn-ghost { @apply bg-white/5 hover:bg-white/10 border border-white/10; }
 .btn-cta { @apply bg-[#cc3344] hover:bg-[#b12c3a] text-white shadow; }
 .card { @apply rounded-2xl bg-panel/60 border border-white/10 shadow-innerSoft; }
-
 a.link { @apply text-twitch hover:underline; }
