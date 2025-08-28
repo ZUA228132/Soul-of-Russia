@@ -14,6 +14,24 @@ const firebaseConfig = {
 
 let app, auth, db
 export let firebaseOK = false
+
+// ---- Firestore sanitizers ----
+const isPlain = (v) => Object.prototype.toString.call(v)==='[object Object]'
+const cleanValue = (v) => {
+  if (v === undefined || Number.isNaN(v)) return null
+  if (Array.isArray(v)) return v.map(cleanValue)
+  if (isPlain(v)) return Object.fromEntries(Object.entries(v).map(([k,val])=>[k, cleanValue(val)]))
+  if (typeof v === 'bigint') return Number(v)
+  return v
+}
+const pickItem = (it) => ({
+  id: String(it?.id || ''),
+  title: String(it?.title || ''),
+  price: Number(it?.price || 0),
+  image: typeof it?.image === 'string' ? it.image : '',
+  qty: Number(it?.qty || 1)
+})
+
 try {
   app = initializeApp(firebaseConfig)
   auth = getAuth(app)
@@ -65,7 +83,7 @@ export async function upsertProduct(p) {
     return items[0].id
   }
   const ref = doc(collection(db, 'products'))
-  await setDoc(ref, { ...p, createdAt: Date.now() })
+  await setDoc(ref, cleanValue({ ...p, createdAt: Date.now() }))
   return ref.id
 }
 
@@ -76,7 +94,7 @@ export async function saveCart(uid, cart) {
     return
   }
   const ref = doc(db, 'carts', uid)
-  await setDoc(ref, { cart, updatedAt: Date.now() }, { merge: true })
+  await setDoc(ref, { cart: cleanValue(cart), updatedAt: Date.now() }, { merge: true })
 }
 
 export async function loadCart(uid) {
@@ -97,7 +115,7 @@ export async function createOrder(uid, payload) {
     localStorage.setItem('orders_local', JSON.stringify(all))
     return id
   }
-  const ref = await addDoc(collection(db, 'orders'), { uid, ...payload, createdAt: Date.now(), status: 'new' })
+  const ref = await addDoc(collection(db, 'orders'), cleanValue({ uid, ...payload, createdAt: Date.now(), status: 'new' }))
   return ref.id
 }
 
