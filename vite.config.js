@@ -9,6 +9,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icons/icon-192.png','icons/icon-512.png','firebase-messaging-sw.js'],
       manifest: {
+        gcm_sender_id: '103953800507',
         name: 'Душа Руси — Магазин футболок',
         short_name: 'Душа Руси',
         start_url: '/',

@@ -13,31 +13,35 @@ const firebaseConfig = {
   measurementId: "G-3X688K16HM"
 }
 
-// Use separate app instance to avoid cyclic imports
+// separate app to avoid circular deps
 const app = initializeApp(firebaseConfig, 'messaging-app')
 const db = getFirestore(app)
-const auth = getAuth() // use default app auth
-let messaging = null
+const auth = getAuth() // default app auth
 
 export async function initMessaging(vapidKey) {
-  const ok = await isSupported().catch(()=>false)
-  if (!ok) return { supported:false }
-  messaging = getMessaging(app)
+  const supported = await isSupported().catch(()=>false)
+  if (!supported) return { supported:false, error:'Браузер не поддерживает Web Push' }
+
+  if (!('serviceWorker' in navigator)) return { supported:false, error:'Service Worker недоступен' }
+  if (!vapidKey || vapidKey.length < 30) return { supported:false, error:'VAPID key пустой или некорректен' }
+
+  // 1) регистрируем SW (отдельный от PWA), чтобы Chrome знал откуда брать пуши
+  const reg = await navigator.serviceWorker.register('/firebase-messaging-sw.js').catch(e=>{ throw new Error('SW register failed: '+e) })
+
+  const messaging = getMessaging(app)
   try {
-    const token = await getToken(messaging, { vapidKey })
+    // 2) получаем токен, обязательно указывая registration и vapidKey
+    const token = await getToken(messaging, { vapidKey, serviceWorkerRegistration: reg })
+    if (!token) return { supported:true, token:null, error:'Не получили токен (user denied?)' }
+
     const uid = auth?.currentUser?.uid || 'anon'
-    if (token) {
-      await setDoc(doc(db, 'push_tokens', token), {
-        uid, token, createdAt: Date.now(), ua: navigator.userAgent
-      }, { merge: true })
-    }
-    onMessage(messaging, (payload) => {
-      // optional: show a toast in-app
-      console.log('[FCM] foreground message', payload)
-    })
+    await setDoc(doc(db, 'push_tokens', token), {
+      uid, token, createdAt: Date.now(), ua: navigator.userAgent
+    }, { merge: true })
+
+    onMessage(messaging, (payload) => console.log('[FCM] foreground message', payload))
     return { supported:true, token }
   } catch (e) {
-    console.warn('[FCM] permission/token error', e)
     return { supported:true, token:null, error:String(e) }
   }
 }

@@ -178,7 +178,7 @@ export default function App() {
               <button className="btn btn-ghost" onClick={async()=>{
                 const vapid = import.meta.env.VITE_FIREBASE_VAPID_KEY || ''
                 const r = await initMessaging(vapid)
-                alert(r.token ? 'Пуш-уведомления подключены' : 'Пуши недоступны: ' + (r.error||'нет токена'))
+                alert(r.token ? ('Пуши подключены: ' + r.token.slice(0,12) + '…') : 'Пуши недоступны: ' + (r.error||'нет токена'))
               }}>Подключить пуш-уведомления</button>
             </div>
           </footer>
