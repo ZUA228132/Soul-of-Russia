@@ -2,29 +2,42 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { color-scheme: dark; }
-html, body { font-family: Inter, system-ui, sans-serif; }
-.font-display { font-family: Unbounded, Inter, system-ui, sans-serif; }
+:root{
+  --bg:#0d0f12;
+  --base-text:#f8fafc;
+  --muted:#a0a3ad;
+  --panel:rgba(255,255,255,0.04);
+  --border:rgba(255,255,255,0.10);
+  --cta:#d62b3d;
+  --card:rgba(255,255,255,0.03);
+}
+.theme-light{
+  --bg:#f7f7f8;
+  --base-text:#0b1220;
+  --muted:#475569;
+  --panel:rgba(0,0,0,0.04);
+  --border:rgba(0,0,0,0.12);
+  --card:rgba(0,0,0,0.03);
+}
+.app-bg{ background-color:var(--bg); }
+.text-base-text{ color:var(--base-text); }
+.text-muted{ color:var(--muted); }
 
-.badge { @apply inline-flex items-center px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-xs; }
-.btn { @apply inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition; }
-.btn-ghost { @apply bg-white/5 hover:bg-white/10 border border-white/10; }
-.btn-cta { @apply bg-[#cc3344] hover:bg-[#b12c3a] text-white shadow; }
-.card { @apply rounded-2xl bg-panel/60 border border-white/10 shadow-innerSoft; }
-a.link { @apply text-twitch hover:underline; }
+.badge{ @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs; background:var(--panel); border:1px solid var(--border); }
+.btn{ @apply inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition; }
+.btn-ghost{ background:var(--panel); border:1px solid var(--border); }
+.btn-ghost:hover{ background:rgba(255,255,255,0.08); }
+.btn-cta{ background:var(--cta); color:white; }
+.card{ border:1px solid var(--border); background:var(--card); border-radius:1rem; box-shadow:var(--shadow, none); }
 
-/* Light theme overrides (quick but effective) */
-body.theme-light { color-scheme: light; }
-body.theme-light { background-color: #f7f7f8; color: #111; }
-body.theme-light .bg-ink { background-color: #f7f7f8 !important; }
-body.theme-light .text-white { color: #111 !important; }
-body.theme-light .bg-white\/5 { background-color: rgba(0,0,0,0.04) !important; }
-body.theme-light .border-white\/10 { border-color: rgba(0,0,0,0.12) !important; }
-body.theme-light .text-fog { color: #4b5563 !important; }
-body.theme-light .card { background: rgba(0,0,0,0.03); }
-body.theme-light .btn-cta { background: #d61f3d; }
-body.theme-light .badge { background: rgba(0,0,0,0.04); }
+/* mobile spacing */
+.section{ padding: 20px 16px; }
+@media (min-width:768px){ .section{ padding: 48px 24px; } }
 
-/* PWA hint */
-.pwa-hint { @apply fixed left-3 right-3 bottom-3 z-50 rounded-2xl bg-white/10 border border-white/10 backdrop-blur px-4 py-3 text-sm; }
-body.theme-light .pwa-hint { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); }
+/* smooth divider between sections */
+.divider{
+  height:72px; background:
+    radial-gradient(80% 100% at 50% 0%, rgba(212,175,55,0.18), transparent),
+    linear-gradient(180deg, transparent, rgba(255,255,255,0.03));
+  mask-image: radial-gradient(70% 100% at 50% 0%, black, transparent 70%);
+}
