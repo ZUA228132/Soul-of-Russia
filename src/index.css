@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+html, body { background: #121317; color: #e7e7ea; font-family: Inter, system-ui, sans-serif; }
+.font-display { font-family: Unbounded, Inter, system-ui, sans-serif; }
+.gradient-border { position: relative; }
+.gradient-border::before {
+  content: ""; position: absolute; inset: -1px; border-radius: 1.2rem; padding: 1px;
+  background: linear-gradient(120deg, rgba(212,175,55,0.6), rgba(255,255,255,0.2));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+}
