@@ -75,25 +75,59 @@ const Catalog = ({ products, onAdd, filters }) => {
     </section>
   )
 }
-const Cart = ({ cart, inc, dec, remove, total, clear, uid }) => (
-  <div className="section">
-    <h2 className="font-display text-3xl font-extrabold mb-4">Корзина</h2>
-    {cart.length === 0 ? (<div className="text-muted">Пусто. Но это легко исправить 😉</div>) : (
-      <div className="space-y-4">
-        {cart.map(i => (
-          <div key={i.id} className="flex items-center gap-3 card p-3">
-            <img src={i.image || 'icons/icon-192.png'} alt={i.title} className="w-20 h-16 object-cover rounded-xl"/>
-            <div className="flex-1"><div className="font-semibold">{i.title}</div><div className="text-muted">{money(i.price)}</div></div>
-            <div className="flex items-center gap-2"><button onClick={()=>dec(i.id)} className="w-8 h-8 rounded-lg btn-ghost">-</button><div className="w-8 text-center">{i.qty}</div><button onClick={()=>inc(i.id)} className="w-8 h-8 rounded-lg btn-ghost">+</button></div>
-            <button onClick={()=>remove(i.id)} className="ml-2 text-muted hover:opacity-80">Удалить</button>
+const Cart = ({ cart, inc, dec, remove, total, clear, uid }) => {
+  const [open, setOpen] = React.useState(false)
+  return (
+    <div className="section">
+      <h2 className="font-display text-3xl font-extrabold mb-4">Корзина</h2>
+      {cart.length === 0 ? (<div className="text-muted">Пусто. Но это легко исправить 😉</div>) : (
+        <div className="space-y-4">
+          {cart.map(i => (
+            <div key={i.id} className="flex items-center gap-3 card p-3">
+              <img src={i.image || 'icons/icon-192.png'} alt={i.title} className="w-20 h-16 object-cover rounded-xl"/>
+              <div className="flex-1"><div className="font-semibold">{i.title}</div><div className="text-muted">{money(i.price)}</div></div>
+              <div className="flex items-center gap-2"><button onClick={()=>dec(i.id)} className="w-8 h-8 rounded-lg btn-ghost">-</button><div className="w-8 text-center">{i.qty}</div><button onClick={()=>inc(i.id)} className="w-8 h-8 rounded-lg btn-ghost">+</button></div>
+              <button onClick={()=>remove(i.id)} className="ml-2 text-muted hover:opacity-80">Удалить</button>
+            </div>
+          ))}
+          <div className="flex items-center justify-between pt-2" style={{borderTop:'1px solid var(--border)'}}><div className="text-muted">Итого</div><div className="font-display text-2xl text-gold">{money(total)}</div></div>
+          <div className="flex gap-3"><button className="btn btn-ghost" onClick={clear}>Очистить</button><button className="btn btn-cta" onClick={()=>setOpen(true)}>Оформить</button></div>
+        </div>
+      )}
+
+      {/* checkout modal */}
+      {open && (
+        <div className="fixed inset-0 z-50" onClick={()=>setOpen(false)}>
+          <div className="absolute inset-0 bg-black/50"></div>
+          <div className="absolute left-0 right-0 bottom-0 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2 sm:mx-auto sm:w-[480px] rounded-t-2xl sm:rounded-2xl card p-4" onClick={e=>e.stopPropagation()}>
+            <div className="mx-auto w-12 h-1.5 rounded-full bg-white/20 mb-3"></div>
+            <h3 className="font-display text-2xl font-extrabold mb-3">Оформление</h3>
+            <form className="space-y-3">
+              <input required name="phone" placeholder="Телефон" className="btn-ghost rounded-xl px-3 py-2 outline-none w-full"/>
+              <input required name="address" placeholder="Адрес (для доставки)" className="btn-ghost rounded-xl px-3 py-2 outline-none w-full"/>
+              <select name="delivery" className="btn-ghost rounded-xl px-3 py-2 outline-none w-full">
+                <option value="delivery">Доставка</option>
+                <option value="pickup">Самовывоз (Ростов-на-Дону)</option>
+              </select>
+              <button className="btn btn-cta w-full" onClick={async (e)=>{
+                e.preventDefault();
+                const form = e.currentTarget.closest('form');
+                if(!form.phone.value || !form.address.value){ alert('Укажи телефон и адрес'); return }
+                const payload = { phone: form.phone.value, address: form.address.value, delivery: form.delivery.value, items: cart, total }
+                try {
+                  const id = await createOrder(uid||'anon', payload)
+                  alert('Заказ оформлен: '+id)
+                  setOpen(false); clear(); location.hash=''
+                } catch(e) { console.error(e); alert('Ошибка создания заказа') }
+              }}>Подтвердить заказ</button>
+              <button type="button" className="btn btn-ghost w-full" onClick={()=>setOpen(false)}>Отмена</button>
+            </form>
           </div>
-        ))}
-        <div className="flex items-center justify-between pt-2" style={{borderTop:'1px solid var(--border)'}}><div className="text-muted">Итого</div><div className="font-display text-2xl text-gold">{money(total)}</div></div>
-        <div className="flex gap-3"><button className="btn btn-ghost" onClick={clear}>Очистить</button><button className="btn btn-cta" onClick={()=>{ alert('Заказ создан! (демо)'); clear(); location.hash=''; }}>Оформить</button></div>
-      </div>
-    )}
-  </div>
-)
+        </div>
+      )}
+    </div>
+  )
+}
 const Admin = React.lazy(() => import('./components/AdminLazy.jsx'))
 
 export default function App() {

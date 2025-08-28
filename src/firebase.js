@@ -13,7 +13,7 @@ const firebaseConfig = {
 }
 
 let app, auth, db
-let firebaseOK = false
+export let firebaseOK = false
 try {
   app = initializeApp(firebaseConfig)
   auth = getAuth(app)
@@ -111,4 +111,12 @@ export async function fetchOrders(uidOnly = null) {
   return new Promise((resolve) => {
     const unsub = onSnapshot(q, (snap) => resolve(snap.docs.map(d=>({ id:d.id, ...d.data() }))), () => resolve([]))
   })
+}
+
+
+export function subscribeOrders(cb){
+  if (!firebaseOK){ cb(JSON.parse(localStorage.getItem('orders_local')||'[]')); return ()=>{} }
+  const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'))
+  const unsub = onSnapshot(q, (snap)=> cb(snap.docs.map(d=>({ id:d.id, ...d.data() }))), ()=>cb([]))
+  return unsub
 }

@@ -12,7 +12,7 @@ const svgImage = (title = 'Душа Руси', color = '#0b0c10', accent = '#d4a
   return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg)
 }
 
-import { upsertProduct, fetchOrders } from '../firebase.js'
+import { upsertProduct, subscribeOrders } from '../firebase.js'
 
 export default function Admin({ products, setProducts }) {
   const [logged, setLogged] = useState(false)

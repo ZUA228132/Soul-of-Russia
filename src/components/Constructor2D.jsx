@@ -192,7 +192,7 @@ export default function Constructor2D({ onAddToCart }) {
 
       <div className="rounded-2xl bg-white/5 border border-white/10 p-4 flex items-center justify-center">
         <div ref={wrapperRef} className="w-full">
-          <Stage ref={stageRef} width={BASE_W} height={BASE_H}>
+          <Stage ref={stageRef} width={BASE_W} height={BASE_H} pixelRatio={1} imageSmoothingEnabled={false}>
             <Layer ref={layerRef}>
               <TeeSilhouette color={shirtColor}/>
 
