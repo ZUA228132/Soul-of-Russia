@@ -2,7 +2,7 @@ import React from 'react'
 
 export default function HeroSlogan() {
   return (
-    <section className="section">
+    <section className="section safe-top">
       <h1 className="font-display text-5xl leading-[1.03] sm:text-6xl font-extrabold">
         <span className="bg-gradient-title bg-clip-text text-transparent">Футболки, в которых слышно сердце</span>
       </h1>
@@ -10,10 +10,8 @@ export default function HeroSlogan() {
         Плотный хлопок <b>190 г/м²</b>, чистый силуэт и характер. Создай свой принт или выбери из коллекции.
       </p>
       <div className="mt-6 flex items-center gap-3">
-        <a href="#catalog" className="btn btn-cta">К коллекции</a>
-        <a href="#constructor" className="btn btn-ghost">Собрать свою</a>
-        <span className="badge">✓ Мягкая посадка</span>
-        <span className="badge">✓ Устойчивые краски</span>
+        <a href="#catalog" className="btn btn-cta whitespace-nowrap">К коллекции</a>
+        <a href="#constructor" className="btn btn-ghost whitespace-nowrap">Собрать свою</a>
       </div>
 
       <div className="mt-6 card p-4">

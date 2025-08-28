@@ -30,7 +30,7 @@ export default function Navbar({ cartCount=0 }) {
   }
 
   return (
-    <header className="sticky top-0 z-40" style={{backdropFilter:'blur(10px)'}}>
+    <header className="sticky top-0 z-40 safe-header" style={{backdropFilter:'blur(10px)'}}>
       <div className="section py-3 flex items-center gap-3 border-b" style={{borderColor:'var(--border)'}}>
         <div className="w-9 h-9 rounded-xl btn-ghost flex items-center justify-center font-bold">ДР</div>
         <div className="leading-tight select-none">

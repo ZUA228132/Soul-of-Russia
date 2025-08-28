@@ -42,3 +42,70 @@
     linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0));
   mask-image: linear-gradient(180deg, black 0%, black 60%, transparent 100%);
 }
+
+
+.app-safe{ padding-top: env(safe-area-inset-top); }
+.safe-top{ padding-top: calc(16px + env(safe-area-inset-top)); }
+
+/* smoother divider */
+.divider{
+  height:96px;
+  background:
+    radial-gradient(120% 120% at 50% 0%, rgba(212,175,55,0.14), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0));
+  mask-image: linear-gradient(180deg, black 0%, black 70%, transparent 100%);
+}
+
+/* Collab card glam */
+.collab-card{
+  position: relative;
+  overflow: hidden;
+  border:1px solid rgba(145,70,255,0.4);
+  box-shadow: 0 0 0 1px rgba(145,70,255,0.15) inset, 0 10px 30px rgba(145,70,255,0.12);
+}
+.collab-card:before{
+  content:"";
+  position:absolute; inset:-20% -20%;
+  background: radial-gradient(40% 40% at 20% 10%, rgba(145,70,255,0.28), transparent 60%),
+              radial-gradient(30% 30% at 80% 30%, rgba(212,175,55,0.25), transparent 60%);
+  pointer-events:none;
+  filter: blur(20px);
+}
+
+/* SAFE_UTIL */
+
+.app-safe{ padding-top: env(safe-area-inset-top); }
+.safe-top{ padding-top: calc(12px + env(safe-area-inset-top)); }
+header.safe-header{ padding-top: env(safe-area-inset-top); }
+
+
+/* DIVIDER */
+
+/* smoother divider between sections */
+.divider{
+  height:96px;
+  background:
+    radial-gradient(120% 120% at 50% -10%, rgba(212,175,55,0.14), transparent 60%),
+    linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0));
+  mask-image: linear-gradient(180deg, black 0%, black 72%, transparent 100%);
+}
+
+
+/* COLLAB */
+
+/* Collab card glam */
+.collab-card{
+  position: relative;
+  overflow: hidden;
+  border:1px solid rgba(145,70,255,0.45);
+  box-shadow: 0 0 0 1px rgba(145,70,255,0.18) inset, 0 8px 26px rgba(145,70,255,0.16);
+}
+.collab-card:before{
+  content:"";
+  position:absolute; inset:-20% -20%;
+  background: radial-gradient(40% 40% at 20% 10%, rgba(145,70,255,0.28), transparent 65%),
+              radial-gradient(28% 28% at 80% 20%, rgba(212,175,55,0.22), transparent 65%);
+  pointer-events:none;
+  filter: blur(24px);
+}
+

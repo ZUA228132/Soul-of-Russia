@@ -2,7 +2,7 @@ import React from 'react'
 export default function CollabHero() {
   return (
     <section className="section">
-      <div className="card p-5 overflow-hidden">
+      <div className="card p-5 collab-card">
         <div className="flex items-center gap-3">
           <img src="https://spng.pngfind.com/pngs/s/180-1800308_twitch-logo-png-transparent-background-twitch-logo-no.png" alt="Twitch" className="w-7 h-7 object-contain"/>
           <div>
