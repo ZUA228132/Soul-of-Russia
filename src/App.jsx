@@ -7,6 +7,7 @@ import Constructor2D from './components/Constructor2D.jsx'
 import PWAInstallHint from './components/PWAInstallHint.jsx'
 import Divider from './components/Divider.jsx'
 import { ensureAnonAuth, fetchProducts, upsertProduct, saveCart as fbSaveCart, loadCart as fbLoadCart, createOrder } from './firebase.js'
+import { initMessaging } from './firebaseMessaging.js'
 
 const money = (n) => new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(n)
 const LS_PRODUCTS = 'dusha_rusi_products'
@@ -173,6 +174,13 @@ export default function App() {
             >
               © 2025 «Душа Руси»
             </button>
+          <div className="mt-2">
+              <button className="btn btn-ghost" onClick={async()=>{
+                const vapid = import.meta.env.VITE_FIREBASE_VAPID_KEY || ''
+                const r = await initMessaging(vapid)
+                alert(r.token ? 'Пуш-уведомления подключены' : 'Пуши недоступны: ' + (r.error||'нет токена'))
+              }}>Подключить пуш-уведомления</button>
+            </div>
           </footer>
 
     </div>

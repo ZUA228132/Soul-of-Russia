@@ -28,8 +28,8 @@ const normalize = (v) => {
   if (v === undefined || Number.isNaN(v)) return null
   if (v === null) return null
   const t = typeof v
-  if (t === 'string' || t === 'number' || t === 'boolean') return v
-  if (Array.isArray(v)) return v.map(normalize)
+  if (t === 'string' || t === 'number' || t === 'boolean') return (typeof v==='string' && v.length>MAX_STR) ? v.slice(0,MAX_STR) : v
+  if (Array.isArray(v)) return (typeof v==='string' && v.length>MAX_STR) ? v.slice(0,MAX_STR) : v.map(normalize)
   if (isPlain(v)) return Object.fromEntries(Object.entries(v).map(([k,val])=>[k, normalize(val)]))
   // Blob/File/Date/Map/Set/Function/DOM/etc.
   try {
@@ -44,13 +44,17 @@ const normalize = (v) => {
   return null
 }
 const cleanValue = (v) => normalize(v)
-const pickItem = (it) => ({
-  id: String(it?.id || ''),
-  title: String(it?.title || ''),
-  price: Number(it?.price || 0),
-  image: typeof it?.image === 'string' ? it.image : '',
-  qty: Number(it?.qty || 1)
-})
+const pickItem = (it) => {
+  let img = typeof it?.image === 'string' ? it.image : ''
+  if (img.startsWith('data:') && img.length > 80000) img = '' // drop overweight inline images
+  return {
+    id: String(it?.id || ''),
+    title: String(it?.title || ''),
+    price: Number(it?.price || 0),
+    image: img,
+    qty: Number(it?.qty || 1)
+  }
+}
 
 try {
   app = initializeApp(firebaseConfig)
@@ -160,20 +164,21 @@ export function subscribeOrders(cb){
 }
 
 // ---- Final JSON sanitizer & safeWrite ----
+const MAX_STR = 100000; // ~100KB cap for strings (avoid massive data URLs)
 const jsonSanitize = (obj) => {
   const seen = new WeakSet()
   const rep = (k, v) => {
     if (typeof v === 'undefined' || Number.isNaN(v)) return null
     if (typeof v === 'function') return String(v.name || 'fn')
     if (typeof v === 'bigint') return Number(v)
-    if (v instanceof Date) return v.toISOString()
+    if (v instanceof Date) return (typeof v==='string' && v.length>MAX_STR) ? v.slice(0,MAX_STR) : v.toISOString()
     if (typeof Blob !== 'undefined' && v instanceof Blob) return null
     if (typeof File !== 'undefined' && v instanceof File) return null
     if (v && typeof v === 'object') {
       if (seen.has(v)) return '[Circular]'
       seen.add(v)
     }
-    return v
+    return (typeof v==='string' && v.length>MAX_STR) ? v.slice(0,MAX_STR) : v
   }
   try { return JSON.parse(JSON.stringify(obj, rep)) } catch { return null }
 }
