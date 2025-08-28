@@ -134,6 +134,3 @@ export default function App() {
   )
 }
 
-// Hooks and Admin lazy file
-function useProducts(){ const [p, setP] = React.useState(()=>JSON.parse(localStorage.getItem('dusha_rusi_products')||'null') ?? (()=>{ const s = seedProducts(); localStorage.setItem('dusha_rusi_products', JSON.stringify(s)); return s })()); React.useEffect(()=>localStorage.setItem('dusha_rusi_products', JSON.stringify(p)), [p]); return [p,setP] }
-function useCart(){ const [cart,setCart]=React.useState(()=>JSON.parse(localStorage.getItem('dusha_rusi_cart')||'[]')); React.useEffect(()=>localStorage.setItem('dusha_rusi_cart', JSON.stringify(cart)),[cart]); const add=(pr)=>setCart(c=>{const i=c.findIndex(x=>x.id===pr.id); if(i>=0){const cp=[...c]; cp[i].qty++; return cp} return [...c,{id:pr.id,title:pr.title,price:pr.price,image:pr.images?.[0],qty:1}]}); const addCustomPng=(dataUrl)=>setCart(c=>[...c,{id:crypto.randomUUID(),title:'Кастомная футболка',price:3490,image:dataUrl,qty:1}]); const remove=(id)=>setCart(c=>c.filter(i=>i.id!==id)); const inc=(id)=>setCart(c=>c.map(i=>i.id===id?{...i,qty:i.qty+1}:i)); const dec=(id)=>setCart(c=>c.map(i=>i.id===id?{...i,qty:Math.max(1,i.qty-1)}:i)); const total=cart.reduce((s,i)=>s+i.price*i.qty,0); const clear=()=>setCart([]); return {cart,add,addCustomPng,remove,inc,dec,total,clear} }
