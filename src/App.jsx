@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import Navbar from './components/Navbar.jsx'
+import HeroSlogan from './components/HeroSlogan.jsx'
 import CollabHero from './components/CollabHero.jsx'
 import Filters from './components/Filters.jsx'
 import Constructor2D from './components/Constructor2D.jsx'
+import PWAInstallHint from './components/PWAInstallHint.jsx'
 
 const money = (n) => new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB', maximumFractionDigits: 0 }).format(n)
 const LS_PRODUCTS = 'dusha_rusi_products'
@@ -27,11 +29,7 @@ const seedProducts = () => [
   { id: crypto.randomUUID(), title: 'Футболка «SNAISIX drop»',     price: 3190, color: 'Фиолетовая', images: [svgImage('SNAISIX drop','#1b1029')], description: 'Коллаборация со SNAISIX.', tags: ['лимит'], badges: ['bolt','gift'], published: true }
 ]
 
-const useProducts = () => {
-  const [products, setProducts] = useState(() => load(LS_PRODUCTS, null) ?? (() => { const seeded = seedProducts(); save(LS_PRODUCTS, seeded); return seeded })())
-  useEffect(() => save(LS_PRODUCTS, products), [products])
-  return [products, setProducts]
-}
+const useProducts = () => { const [products, setProducts] = useState(() => load(LS_PRODUCTS, null) ?? (() => { const seeded = seedProducts(); save(LS_PRODUCTS, seeded); return seeded })()); useEffect(() => save(LS_PRODUCTS, products), [products]); return [products, setProducts] }
 const useCart = () => {
   const [cart, setCart] = useState(() => load(LS_CART, []))
   useEffect(() => save(LS_CART, cart), [cart])
@@ -60,7 +58,6 @@ const ProductCard = ({p, onAdd}) => (
     </div>
   </div>
 )
-
 const Catalog = ({ products, onAdd, filters }) => {
   const filtered = useMemo(() => products.filter(p => {
     if (filters.query && !p.title.toLowerCase().includes(filters.query.toLowerCase())) return false
@@ -77,7 +74,6 @@ const Catalog = ({ products, onAdd, filters }) => {
     </section>
   )
 }
-
 const Cart = ({ cart, inc, dec, remove, total, clear }) => (
   <div className="max-w-4xl mx-auto px-4 py-10">
     <h2 className="font-display text-2xl md:text-3xl font-extrabold mb-6">Корзина</h2>
@@ -97,7 +93,6 @@ const Cart = ({ cart, inc, dec, remove, total, clear }) => (
     )}
   </div>
 )
-
 const Admin = ({ products, setProducts }) => {
   const [logged, setLogged] = useState(false)
   const [pwd, setPwd] = useState('')
@@ -122,7 +117,7 @@ const Admin = ({ products, setProducts }) => {
   const badgeDefs = [ { id:'hit', label:'Хит', ico:'🔥' }, { id:'star', label:'Новинка', ico:'⭐️' }, { id:'gift', label:'Подарок', ico:'🎁' }, { id:'bolt', label:'Эксклюзив', ico:'⚡️' } ]
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
-      <h2 className="font-display text-3xl font-extrabолд mb-6">Новый товар</h2>
+      <h2 className="font-display text-3xl font-extrabold mb-6">Новый товар</h2>
       <div className="grid lg:grid-cols-3 gap-5">
         <div className="lg:col-span-1 p-4 rounded-2xl bg-white/5 border border-white/10">
           <div className="space-y-3">
@@ -133,7 +128,7 @@ const Admin = ({ products, setProducts }) => {
             </div>
             <div><label className="text-sm text-fog">Теги (через запятую)</label><input value={draft.tags} onChange={e=>setDraft(d=>({...d, tags:e.target.value}))} className="mt-1 w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none"/></div>
             <div><label className="text-sm text-fog">Описание</label><textarea rows="4" value={draft.description} onChange={e=>setDraft(d=>({...d, description:e.target.value}))} className="mt-1 w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none"></textarea></div>
-            <div><label className="text-sm text-fog">Изображения</label><input type="file" accept="image/*" multiple onChange={e=>{ const files=Array.from(e.target.files||[]); Promise.all(files.map(f => new Promise(res=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(f) }))).then(list=>setDraft(d=>({...d, images:[...(d.images||[]), ...list]}))) }} className="mt-1 w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none"/>
+            <div><label className="text-sm text-fog">Изображения</label><input type="file" accept="image/*" multiple onChange={onImg} className="mt-1 w-full rounded-xl bg-white/10 border border-white/10 px-3 py-2 outline-none"/>
               <div className="mt-2 grid grid-cols-3 gap-2">{draft.images?.map((src, idx)=>(<img key={idx} src={src} className="w-full h-20 object-cover rounded-lg"/>))}</div>
             </div>
             <div>
@@ -159,8 +154,8 @@ const Admin = ({ products, setProducts }) => {
                   </div>
                 </div>
                 <div className="mt-3 flex gap-2">
-                  <button className="btn btn-ghost" onClick={()=>setProducts(ps => ps.map(x => x.id===p.id? {...x, published:!x.published} : x))}>Скрыть/Показать</button>
-                  <button className="btn btn-ghost" onClick={()=>setProducts(ps => ps.filter(x => x.id !== p.id))}>Удалить</button>
+                  <button className="btn btn-ghost" onClick={()=>toggle(p.id)}>Скрыть/Показать</button>
+                  <button className="btn btn-ghost" onClick={()=>del(p.id)}>Удалить</button>
                 </div>
               </div>
             ))}
@@ -181,16 +176,18 @@ export default function App() {
   return (
     <div className="min-h-screen">
       <Navbar cartCount={cart.cart.length}/>
+      <PWAInstallHint/>
 
       {route === 'admin' ? <Admin products={products} setProducts={setProducts}/> :
        route === 'cart' ? <Cart {...cart}/> :
        route === 'constructor' ? (
         <div className="max-w-7xl mx-auto px-4 py-10">
-          <h2 className="font-display text-3xl font-extrabold mb-4">Конструктор футболок (как vsemayki)</h2>
+          <h2 className="font-display text-3xl font-extrabold mb-4">Конструктор футболок (2D)</h2>
           <Constructor2D onAddToCart={(png)=>{ cart.addCustomPng(png); location.hash='#cart' }}/>
         </div>
        ) : (
         <>
+          <HeroSlogan/>
           <CollabHero/>
           <Filters onChange={setFilters}/>
           <Catalog products={products} onAdd={cart.add} filters={filters}/>

@@ -5,9 +5,26 @@
 :root { color-scheme: dark; }
 html, body { font-family: Inter, system-ui, sans-serif; }
 .font-display { font-family: Unbounded, Inter, system-ui, sans-serif; }
+
 .badge { @apply inline-flex items-center px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-xs; }
 .btn { @apply inline-flex items-center justify-center rounded-2xl px-5 py-3 text-sm font-semibold transition; }
 .btn-ghost { @apply bg-white/5 hover:bg-white/10 border border-white/10; }
 .btn-cta { @apply bg-[#cc3344] hover:bg-[#b12c3a] text-white shadow; }
 .card { @apply rounded-2xl bg-panel/60 border border-white/10 shadow-innerSoft; }
 a.link { @apply text-twitch hover:underline; }
+
+/* Light theme overrides (quick but effective) */
+body.theme-light { color-scheme: light; }
+body.theme-light { background-color: #f7f7f8; color: #111; }
+body.theme-light .bg-ink { background-color: #f7f7f8 !important; }
+body.theme-light .text-white { color: #111 !important; }
+body.theme-light .bg-white\/5 { background-color: rgba(0,0,0,0.04) !important; }
+body.theme-light .border-white\/10 { border-color: rgba(0,0,0,0.12) !important; }
+body.theme-light .text-fog { color: #4b5563 !important; }
+body.theme-light .card { background: rgba(0,0,0,0.03); }
+body.theme-light .btn-cta { background: #d61f3d; }
+body.theme-light .badge { background: rgba(0,0,0,0.04); }
+
+/* PWA hint */
+.pwa-hint { @apply fixed left-3 right-3 bottom-3 z-50 rounded-2xl bg-white/10 border border-white/10 backdrop-blur px-4 py-3 text-sm; }
+body.theme-light .pwa-hint { background: rgba(0,0,0,0.04); border-color: rgba(0,0,0,0.12); }

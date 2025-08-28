@@ -7,11 +7,11 @@ export default function CollabHero() {
       <div className="absolute inset-0" style={{backgroundImage:'radial-gradient(circle at 20% 20%, rgba(212,175,55,0.2), transparent 40%), radial-gradient(circle at 80% 30%, rgba(145,70,255,0.18), transparent 40%)'}}></div>
       <div className="relative max-w-7xl mx-auto px-4 py-12 md:py-16 grid md:grid-cols-2 gap-8 items-center">
         <div>
-          <h1 className="font-display text-4xl md:text-6xl font-extrabold leading-[1.05]">
+          <h2 className="font-display text-4xl md:text-5xl font-extrabold leading-[1.05]">
             <span className="bg-gradient-title bg-clip-text text-transparent">Душа Руси × SNAISIX</span>
-          </h1>
+          </h2>
           <p className="mt-5 text-fog text-lg max-w-prose">
-            Эксклюзивная коллаборация со стримером <b>SNAISIX</b>: лимитированные принты, дропы в прямом эфире и награды для подписчиков.
+            Эксклюзивная коллаборация со стримером <b>SNAISIX</b>: лимитированные принты, дропы в прямом эфире и бонусы подписчикам.
           </p>
           <div className="mt-7 flex items-center gap-3">
             <a href="https://twitch.tv/SNAISIX" target="_blank" rel="noreferrer" className="btn btn-cta">Смотреть на Twitch</a>
@@ -34,7 +34,7 @@ export default function CollabHero() {
             </div>
             <ul className="mt-4 text-sm space-y-2 text-fog">
               <li>• Лимитированные дропы и ранний доступ</li>
-              <li>• Спец-принты «только на стримах»</li>
+              <li>• Спец‑принты «только на стримах»</li>
               <li>• Скидки для подписчиков</li>
             </ul>
           </div>
