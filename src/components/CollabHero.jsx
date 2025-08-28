@@ -2,7 +2,6 @@ import React from 'react'
 export default function CollabHero() {
   return (
     <>
-      <div className="divider"></div>
       <section className="section">
         <div className="card p-5 collab-card">
           <div className="flex items-center gap-3">
