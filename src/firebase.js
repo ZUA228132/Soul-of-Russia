@@ -15,15 +15,35 @@ const firebaseConfig = {
 let app, auth, db
 export let firebaseOK = false
 
-// ---- Firestore sanitizers ----
+// ---- Firestore sanitizers (v2) ----
 const isPlain = (v) => Object.prototype.toString.call(v)==='[object Object]'
-const cleanValue = (v) => {
+const isSerializable = (v) => (
+  v === null ||
+  ['string','number','boolean'].includes(typeof v) ||
+  Array.isArray(v) ||
+  isPlain(v)
+)
+// Convert any unsupported types (File/Blob/Date/Map/Set/function/etc.) to safe strings or null
+const normalize = (v) => {
   if (v === undefined || Number.isNaN(v)) return null
-  if (Array.isArray(v)) return v.map(cleanValue)
-  if (isPlain(v)) return Object.fromEntries(Object.entries(v).map(([k,val])=>[k, cleanValue(val)]))
-  if (typeof v === 'bigint') return Number(v)
-  return v
+  if (v === null) return null
+  const t = typeof v
+  if (t === 'string' || t === 'number' || t === 'boolean') return v
+  if (Array.isArray(v)) return v.map(normalize)
+  if (isPlain(v)) return Object.fromEntries(Object.entries(v).map(([k,val])=>[k, normalize(val)]))
+  // Blob/File/Date/Map/Set/Function/DOM/etc.
+  try {
+    // keep data URLs as is
+    if (t === 'object' && v && typeof v.toString === 'function') {
+      const s = v.toString()
+      // if looks like data URL
+      if (typeof s === 'string' && s.startsWith('data:')) return s
+      return String(s)
+    }
+  } catch {}
+  return null
 }
+const cleanValue = (v) => normalize(v)
 const pickItem = (it) => ({
   id: String(it?.id || ''),
   title: String(it?.title || ''),
@@ -83,7 +103,7 @@ export async function upsertProduct(p) {
     return items[0].id
   }
   const ref = doc(collection(db, 'products'))
-  await setDoc(ref, cleanValue({ ...p, createdAt: Date.now() }))
+  await setDoc(ref, cleanValue({ ...p, images: (p.images||[]).map(x=> typeof x==='string'?x:String(x||'')), tags: (p.tags||[]).map(x=>String(x||'')), badges: (p.badges||[]).map(x=>String(x||'')), createdAt: Date.now() }))
   return ref.id
 }
 
@@ -115,7 +135,7 @@ export async function createOrder(uid, payload) {
     localStorage.setItem('orders_local', JSON.stringify(all))
     return id
   }
-  const ref = await addDoc(collection(db, 'orders'), cleanValue({ uid, ...payload, createdAt: Date.now(), status: 'new' }))
+  const ref = await addDoc(collection(db, 'orders'), cleanValue({ uid, ...payload, items: (payload.items||[]).map(pickItem), createdAt: Date.now(), status: 'new' }))
   return ref.id
 }
 
