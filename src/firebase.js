@@ -103,7 +103,7 @@ export async function upsertProduct(p) {
     return items[0].id
   }
   const ref = doc(collection(db, 'products'))
-  await setDoc(ref, cleanValue({ ...p, images: (p.images||[]).map(x=> typeof x==='string'?x:String(x||'')), tags: (p.tags||[]).map(x=>String(x||'')), badges: (p.badges||[]).map(x=>String(x||'')), createdAt: Date.now() }))
+  await safeWrite(ref, { ...p, images: (p.images||[]).map(x=> typeof x==='string'?x:String(x||'')), tags: (p.tags||[]).map(x=>String(x||'')), badges: (p.badges||[]).map(x=>String(x||'')), createdAt: Date.now() })
   return ref.id
 }
 
@@ -135,7 +135,7 @@ export async function createOrder(uid, payload) {
     localStorage.setItem('orders_local', JSON.stringify(all))
     return id
   }
-  const ref = await addDoc(collection(db, 'orders'), cleanValue({ uid, ...payload, items: (payload.items||[]).map(pickItem), createdAt: Date.now(), status: 'new' }))
+  const ref = await addDoc(collection(db, 'orders'), jsonSanitize(cleanValue({ uid, ...payload, items: (payload.items||[]).map(pickItem), createdAt: Date.now(), status: 'new' })))
   return ref.id
 }
 
@@ -157,4 +157,30 @@ export function subscribeOrders(cb){
   const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'))
   const unsub = onSnapshot(q, (snap)=> cb(snap.docs.map(d=>({ id:d.id, ...d.data() }))), ()=>cb([]))
   return unsub
+}
+
+// ---- Final JSON sanitizer & safeWrite ----
+const jsonSanitize = (obj) => {
+  const seen = new WeakSet()
+  const rep = (k, v) => {
+    if (typeof v === 'undefined' || Number.isNaN(v)) return null
+    if (typeof v === 'function') return String(v.name || 'fn')
+    if (typeof v === 'bigint') return Number(v)
+    if (v instanceof Date) return v.toISOString()
+    if (typeof Blob !== 'undefined' && v instanceof Blob) return null
+    if (typeof File !== 'undefined' && v instanceof File) return null
+    if (v && typeof v === 'object') {
+      if (seen.has(v)) return '[Circular]'
+      seen.add(v)
+    }
+    return v
+  }
+  try { return JSON.parse(JSON.stringify(obj, rep)) } catch { return null }
+}
+
+async function safeWrite(ref, data, opts={}) {
+  const clean = cleanValue(data)
+  const finalData = jsonSanitize(clean)
+  if (finalData == null) throw new Error('Sanitize failed')
+  return await setDoc(ref, finalData, opts)
 }

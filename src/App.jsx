@@ -113,7 +113,8 @@ const Cart = ({ cart, inc, dec, remove, total, clear, uid }) => {
                 e.preventDefault();
                 const form = e.currentTarget.closest('form');
                 if(!form.phone.value || !form.address.value){ alert('Укажи телефон и адрес'); return }
-                const payload = { phone: String(form.phone.value||'').trim(), address: String(form.address.value||'').trim(), delivery: String(form.delivery.value||'delivery'), items: cart.map(i=>({id:String(i.id||''), title:String(i.title||''), price:Number(i.price||0), image: typeof i.image==='string'?i.image:'', qty:Number(i.qty||1)})), total: Number(total||0) }
+                const payload = { phone: String(form.phone.value||'').trim(), address: String(form.address.value||'').trim(), delivery: String(form.delivery.value||'delivery'), items: cart.map(i=>({id:String(i.id||''), title:String(i.title||''), price:Number(i.price||0), image: typeof i.image==='string'?i.image:'', qty:Number(i.qty||1)})), total: Number(total||0) };
+                console.log('[checkout] payload', payload)
                 try {
                   const id = await createOrder(uid||'anon', payload)
                   alert('Заказ оформлен: '+id)
